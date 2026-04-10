@@ -1,0 +1,121 @@
+{
+  "_vendor-4FrurzEK.js": {
+    "file": "assets/vendor-4FrurzEK.js",
+    "name": "vendor",
+    "css": [
+      "assets/vendor-D0TRLB1K.css"
+    ]
+  },
+  "_vendor-D0TRLB1K.css": {
+    "file": "assets/vendor-D0TRLB1K.css",
+    "src": "_vendor-D0TRLB1K.css"
+  },
+  "_vendor-charts-ByUZDyM2.js": {
+    "file": "assets/vendor-charts-ByUZDyM2.js",
+    "name": "vendor-charts",
+    "imports": [
+      "_vendor-4FrurzEK.js"
+    ]
+  },
+  "_vendor-shepherd-C_eQSaLi.js": {
+    "file": "assets/vendor-shepherd-C_eQSaLi.js",
+    "name": "vendor-shepherd",
+    "css": [
+      "assets/vendor-shepherd-TRZluGMH.css"
+    ]
+  },
+  "_vendor-shepherd-TRZluGMH.css": {
+    "file": "assets/vendor-shepherd-TRZluGMH.css",
+    "src": "_vendor-shepherd-TRZluGMH.css"
+  },
+  "_vendor-vue-CsR4hgsD.js": {
+    "file": "assets/vendor-vue-CsR4hgsD.js",
+    "name": "vendor-vue",
+    "imports": [
+      "_vendor-charts-ByUZDyM2.js",
+      "_vendor-4FrurzEK.js"
+    ]
+  },
+  "resources/css/dark-mode.css": {
+    "file": "assets/dark-mode-DFj0ua5t.css",
+    "src": "resources/css/dark-mode.css",
+    "isEntry": true
+  },
+  "resources/css/print.css": {
+    "file": "assets/print-CyROwjT2.css",
+    "src": "resources/css/print.css",
+    "isEntry": true
+  },
+  "resources/css/responsive.css": {
+    "file": "assets/responsive-CZWLbHXC.css",
+    "src": "resources/css/responsive.css",
+    "isEntry": true
+  },
+  "resources/js/ai-chat.js": {
+    "file": "assets/ai-chat-CMyCGQAr.js",
+    "name": "ai-chat",
+    "src": "resources/js/ai-chat.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DHY971xI.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-4FrurzEK.js",
+      "_vendor-vue-CsR4hgsD.js",
+      "_vendor-charts-ByUZDyM2.js"
+    ]
+  },
+  "resources/js/dark-mode.js": {
+    "file": "assets/dark-mode-CH_B9d8_.js",
+    "name": "dark-mode",
+    "src": "resources/js/dark-mode.js",
+    "isEntry": true
+  },
+  "resources/js/notifications-poll.js": {
+    "file": "assets/notifications-poll-BzyNRbbo.js",
+    "name": "notifications-poll",
+    "src": "resources/js/notifications-poll.js",
+    "isEntry": true
+  },
+  "resources/js/onboarding-tour.js": {
+    "file": "assets/onboarding-tour-mL88F8hA.js",
+    "name": "onboarding-tour",
+    "src": "resources/js/onboarding-tour.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-shepherd-C_eQSaLi.js"
+    ]
+  },
+  "resources/js/performance.js": {
+    "file": "assets/performance-CajhP5XT.js",
+    "name": "performance",
+    "src": "resources/js/performance.js",
+    "isEntry": true
+  },
+  "resources/js/scroll-to-top.js": {
+    "file": "assets/scroll-to-top-BXsz1iKI.js",
+    "name": "scroll-to-top",
+    "src": "resources/js/scroll-to-top.js",
+    "isEntry": true
+  },
+  "resources/js/subscription-countdown.js": {
+    "file": "assets/subscription-countdown-B1cEaqF6.js",
+    "name": "subscription-countdown",
+    "src": "resources/js/subscription-countdown.js",
+    "isEntry": true
+  },
+  "resources/js/support-chat.js": {
+    "file": "assets/support-chat-BiXtpGcO.js",
+    "name": "support-chat",
+    "src": "resources/js/support-chat.js",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-DoymApgU.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}

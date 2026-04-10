@@ -1,0 +1,399 @@
+/*
+ * OxNet — Unified Dark Mode Stylesheet
+ * Applied when [data-theme="dark"] OR [data-bs-theme="dark"] is set on <html>.
+ * Covers all portals: admin, super-admin, customer, community, auth, errors.
+ */
+
+/* ── Smooth transitions only on theme-sensitive properties ──────── */
+body,
+.card, .card-body, .card-header, .card-footer,
+.navbar, nav, #sidebar, #topbar, #layout-menu, .layout-menu,
+.layout-navbar, #layout-navbar, .community-navbar, #cp-navbar,
+.modal-content, .offcanvas, .offcanvas-body, .offcanvas-header,
+.dropdown-menu, .dropdown-item,
+.table, .table td, .table th, .table thead th,
+.form-control, .form-select,
+.page-link, .badge,
+footer, .sidebar-widget {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+}
+
+/* Exclude transitions on elements that shouldn't animate */
+img, video, canvas, svg {
+    transition: none !important;
+}
+
+/* ── CSS custom properties shared by Bootstrap dark mode ─────── */
+[data-bs-theme="dark"] {
+    --oxnet-bg-body:        #1a1d2b;
+    --oxnet-bg-card:        #232639;
+    --oxnet-bg-sidebar:     #1e2130;
+    --oxnet-bg-navbar:      #1e2130;
+    --oxnet-bg-input:       #2a2d3e;
+    --oxnet-bg-hover:       #2f3248;
+    --oxnet-text-primary:   #e4e6f0;
+    --oxnet-text-muted:     #8892a4;
+    --oxnet-text-heading:   #ffffff;
+    --oxnet-border-color:   #2e3248;
+    --oxnet-accent:         #4f7ef8;
+}
+
+[data-theme="dark"] {
+    /* ── Background layers ─────────────────────────────────────── */
+    --oxnet-bg-body:        #1a1d2b;
+    --oxnet-bg-card:        #232639;
+    --oxnet-bg-sidebar:     #1e2130;
+    --oxnet-bg-navbar:      #1e2130;
+    --oxnet-bg-input:       #2a2d3e;
+    --oxnet-bg-hover:       #2f3248;
+
+    /* ── Text ─────────────────────────────────────────────────── */
+    --oxnet-text-primary:   #e4e6f0;
+    --oxnet-text-muted:     #8892a4;
+    --oxnet-text-heading:   #ffffff;
+
+    /* ── Borders ──────────────────────────────────────────────── */
+    --oxnet-border-color:   #2e3248;
+
+    /* ── Accent ───────────────────────────────────────────────── */
+    --oxnet-accent:         #4f7ef8;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] .layout-wrapper {
+    background-color: var(--oxnet-bg-body) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+[data-theme="dark"] #layout-menu,
+[data-theme="dark"] .layout-menu {
+    background-color: var(--oxnet-bg-sidebar) !important;
+    border-right: 1px solid var(--oxnet-border-color);
+}
+
+[data-theme="dark"] .menu-item .menu-link,
+[data-theme="dark"] .menu-inner .menu-link {
+    color: var(--oxnet-text-muted) !important;
+}
+
+[data-theme="dark"] .menu-item.active > .menu-link,
+[data-theme="dark"] .menu-item:hover > .menu-link {
+    color: var(--oxnet-text-primary) !important;
+    background-color: var(--oxnet-bg-hover) !important;
+}
+
+[data-theme="dark"] .menu-header-text {
+    color: var(--oxnet-text-muted) !important;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+[data-theme="dark"] #layout-navbar,
+[data-theme="dark"] .layout-navbar {
+    background-color: var(--oxnet-bg-navbar) !important;
+    border-bottom: 1px solid var(--oxnet-border-color);
+}
+
+[data-theme="dark"] .navbar-nav .nav-link,
+[data-theme="dark"] .navbar-nav .nav-link i {
+    color: var(--oxnet-text-muted) !important;
+}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-body {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-footer {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Tables ──────────────────────────────────────────────────── */
+[data-theme="dark"] .table,
+[data-theme="dark"] table {
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .table thead th,
+[data-theme="dark"] table thead th {
+    background-color: var(--oxnet-bg-hover) !important;
+    color: var(--oxnet-text-heading) !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+    background-color: var(--oxnet-bg-hover) !important;
+}
+
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Forms ───────────────────────────────────────────────────── */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--oxnet-bg-input) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: var(--oxnet-bg-input) !important;
+    color: var(--oxnet-text-primary) !important;
+    border-color: var(--oxnet-accent) !important;
+    box-shadow: 0 0 0 0.2rem rgba(79, 126, 248, 0.25);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--oxnet-text-muted) !important;
+}
+
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label {
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Dropdowns ───────────────────────────────────────────────── */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+    background-color: var(--oxnet-bg-hover) !important;
+    color: var(--oxnet-text-heading) !important;
+}
+
+[data-theme="dark"] .dropdown-divider {
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Modals ──────────────────────────────────────────────────── */
+[data-theme="dark"] .modal-content {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Offcanvas / Sidebar panels ───────────────────────────────── */
+[data-theme="dark"] .offcanvas {
+    background-color: var(--oxnet-bg-card) !important;
+    color: var(--oxnet-text-primary) !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+[data-theme="dark"] .offcanvas-header {
+    border-bottom-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Misc headings & text ─────────────────────────────────────── */
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: var(--oxnet-text-heading) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--oxnet-text-muted) !important;
+}
+
+[data-theme="dark"] hr {
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Chat bubbles ─────────────────────────────────────────────── */
+[data-theme="dark"] .chat-bubble-admin {
+    background-color: #2d4a9e !important;
+    color: #fff !important;
+}
+
+[data-theme="dark"] .chat-bubble-support {
+    background-color: var(--oxnet-bg-hover) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Pagination ───────────────────────────────────────────────── */
+[data-theme="dark"] .page-link {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .page-item.active .page-link {
+    background-color: var(--oxnet-accent) !important;
+    border-color: var(--oxnet-accent) !important;
+    color: #fff !important;
+}
+
+/* ── Error/Auth pages dark mode ───────────────────────────────── */
+[data-theme="dark"] .misc-wrapper,
+[data-bs-theme="dark"] .misc-wrapper {
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Super-admin portal dark navbar ──────────────────────────── */
+[data-bs-theme="dark"] #topbar {
+    background: #1e2130 !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Customer portal dark navbar ─────────────────────────────── */
+[data-bs-theme="dark"] #cp-navbar,
+[data-bs-theme="dark"] .navbar {
+    background-color: #1a1d2b !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+[data-bs-theme="dark"] .navbar .nav-link {
+    color: rgba(228,230,240,.8) !important;
+}
+
+[data-bs-theme="dark"] .navbar .nav-link:hover,
+[data-bs-theme="dark"] .navbar .nav-link.active {
+    color: #fff !important;
+}
+
+/* ── Community dark navbar ───────────────────────────────────── */
+[data-bs-theme="dark"] .community-navbar {
+    background: #111827 !important;
+}
+
+/* ── Footer dark mode ────────────────────────────────────────── */
+[data-bs-theme="dark"] footer,
+[data-theme="dark"] footer {
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-muted) !important;
+}
+
+/* ── AI chat widget dark mode ────────────────────────────────── */
+[data-theme="dark"] .ai-chat-widget,
+[data-bs-theme="dark"] .ai-chat-widget {
+    background-color: var(--oxnet-bg-card) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+[data-theme="dark"] .ai-chat-messages,
+[data-bs-theme="dark"] .ai-chat-messages {
+    background-color: var(--oxnet-bg-body) !important;
+}
+
+[data-theme="dark"] .ai-chat-input,
+[data-bs-theme="dark"] .ai-chat-input {
+    background-color: var(--oxnet-bg-input) !important;
+    border-color: var(--oxnet-border-color) !important;
+    color: var(--oxnet-text-primary) !important;
+}
+
+/* ── Leaflet map dark overlay ────────────────────────────────── */
+[data-theme="dark"] .leaflet-container,
+[data-bs-theme="dark"] .leaflet-container {
+    background: #1a1d2b !important;
+}
+
+[data-theme="dark"] .leaflet-popup-content-wrapper,
+[data-bs-theme="dark"] .leaflet-popup-content-wrapper {
+    background-color: var(--oxnet-bg-card) !important;
+    color: var(--oxnet-text-primary) !important;
+    border: 1px solid var(--oxnet-border-color) !important;
+}
+
+[data-theme="dark"] .leaflet-popup-tip,
+[data-bs-theme="dark"] .leaflet-popup-tip {
+    background-color: var(--oxnet-bg-card) !important;
+}
+
+[data-theme="dark"] .leaflet-control,
+[data-bs-theme="dark"] .leaflet-control {
+    background-color: var(--oxnet-bg-card) !important;
+    color: var(--oxnet-text-primary) !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+[data-theme="dark"] .leaflet-bar a,
+[data-bs-theme="dark"] .leaflet-bar a {
+    background-color: var(--oxnet-bg-card) !important;
+    color: var(--oxnet-text-primary) !important;
+    border-color: var(--oxnet-border-color) !important;
+}
+
+/* ── Scroll to top button ────────────────────────────────────── */
+#scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #4f7ef8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(79,126,248,.4);
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+#scroll-to-top.visible {
+    display: flex;
+}
+
+#scroll-to-top:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(79,126,248,.5);
+}
+
+[data-theme="dark"] #scroll-to-top,
+[data-bs-theme="dark"] #scroll-to-top {
+    background: var(--oxnet-accent);
+}
+
+/* ── Focus states for accessibility ─────────────────────────── */
+:focus-visible {
+    outline: 2px solid #4f7ef8 !important;
+    outline-offset: 2px !important;
+}
+
+/* ── Smooth scrolling globally ───────────────────────────────── */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ── Loading skeleton ────────────────────────────────────────── */
+.skeleton {
+    background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+[data-theme="dark"] .skeleton,
+[data-bs-theme="dark"] .skeleton {
+    background: linear-gradient(90deg, #2a2d3e 25%, #3a3d4e 50%, #2a2d3e 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

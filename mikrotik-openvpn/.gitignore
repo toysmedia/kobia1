@@ -1,0 +1,7 @@
+# Certificates and keys (sensitive!)
+certificates/
+configs/
+*.key
+*.crt
+*.pem
+!template.ovpn

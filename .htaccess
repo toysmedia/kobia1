@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Force HTTPS (optional)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Redirect to public folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
+
+# PHP Execution Settings for LiteSpeed
+<IfModule Litespeed>
+    SetEnv PHP_ENABLE 1
+    SetEnv LS_PHP_ENABLE 1
+</IfModule>
+
+<IfModule mod_php.c>
+    php_flag engine on
+</IfModule>

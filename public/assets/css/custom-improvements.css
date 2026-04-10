@@ -1,0 +1,166 @@
+/* =============================================================
+   OxNett Custom Improvements — applied across all admin views
+   ============================================================= */
+
+/* ---- Cards ---- */
+.card {
+    box-shadow: 0 2px 8px rgba(67, 89, 113, 0.12);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(67, 89, 113, 0.1);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 18px rgba(67, 89, 113, 0.18);
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(67, 89, 113, 0.1);
+    padding: 1rem 1.25rem;
+}
+
+/* ---- Stat cards (dashboard) ---- */
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(67, 89, 113, 0.18) !important;
+}
+
+.stat-card.primary  { border-left-color: #696cff; }
+.stat-card.blue     { border-left-color: #03c3ec; }
+.stat-card.green    { border-left-color: #71dd37; }
+.stat-card.orange   { border-left-color: #ffab00; }
+.stat-card.purple   { border-left-color: #8c57ff; }
+.stat-card.pink     { border-left-color: #e83e8c; }
+.stat-card.indigo   { border-left-color: #5f61e6; }
+.stat-card.teal     { border-left-color: #20c997; }
+.stat-card.red      { border-left-color: #ff3e1d; }
+.stat-card.dark     { border-left-color: #233446; }
+
+.stat-icon { font-size: 2.4rem; opacity: 0.85; }
+
+/* ---- Tables ---- */
+.table > :not(caption) > * > * {
+    padding: 0.65rem 0.85rem;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: rgba(105, 108, 255, 0.04);
+    transition: background-color 0.15s ease;
+}
+
+.table thead th {
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #566a7f;
+}
+
+.table-light thead th {
+    background-color: #f5f5f9;
+}
+
+/* ---- Badges ---- */
+.badge {
+    border-radius: 50rem;
+    font-weight: 500;
+    font-size: 0.72rem;
+    padding: 0.32em 0.7em;
+}
+
+/* ---- Buttons ---- */
+.btn {
+    border-radius: 0.4rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(67, 89, 113, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* ---- Forms ---- */
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.2);
+    border-color: #696cff;
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #566a7f;
+    margin-bottom: 0.35rem;
+}
+
+/* ---- Page header (title + breadcrumb row) ---- */
+.page-header {
+    margin-bottom: 1.25rem;
+}
+
+/* ---- Router status indicator in navbar ---- */
+#navRouterStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50rem;
+    background: rgba(67, 89, 113, 0.06);
+    transition: background 0.2s;
+}
+
+#navRouterStatus:hover {
+    background: rgba(67, 89, 113, 0.12);
+}
+
+#navRouterStatusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #aaa;
+}
+
+#navRouterStatusDot.online  { background: #71dd37; box-shadow: 0 0 0 2px rgba(113,221,55,0.25); }
+#navRouterStatusDot.offline { background: #ff3e1d; box-shadow: 0 0 0 2px rgba(255,62,29,0.25); animation: pulse-dot 1.5s infinite; }
+#navRouterStatusDot.partial { background: #ffab00; box-shadow: 0 0 0 2px rgba(255,171,0,0.25); }
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ---- MikroTik monitor cards ---- */
+.router-card {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.router-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(67, 89, 113, 0.18) !important;
+}
+
+/* ---- Misc ---- */
+a { text-decoration: none; }
+a:hover { text-decoration: none; }
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

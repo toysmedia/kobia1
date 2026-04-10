@@ -1,0 +1,9 @@
+invalid username or password = Invalid M-Pesa reference code or password
+user already logged in = This account is already connected. Please wait a moment and try again
+you are not allowed to log in from this location = Access denied from your current location
+session limit reached = Maximum number of active sessions reached. Please disconnect another device
+uptime limit reached = Your session time limit has been reached. Please purchase a new package
+traffic limit reached = Your data limit has been reached. Please purchase a new package
+radius server is not responding = Authentication server is unavailable. Please try again later
+shut down = The HotSpot service is currently shut down. Please contact support
+(empty) = Internal error occurred. Please try again
