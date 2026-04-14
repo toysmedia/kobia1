@@ -537,7 +537,7 @@ class RouterController extends Controller
                     $api = RouterOSApiService::fromRouter($router);
                     $api->connect();
 
-                    $billingServerIp = (string) ($router->billing_server_vpn_ip ?: env('BILLING_SERVER_IP', '127.0.0.1'));
+                    $billingServerIp = (string) ($router->billing_server_vpn_ip ?: config('app.billing_server_ip', '127.0.0.1'));
                     $radiusRows = $api->sendCommand('/radius/print');
                     $radiusId = null;
 
@@ -633,11 +633,6 @@ class RouterController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Unsupported configure step.',
-        ], 422);
     }
 
     /**
