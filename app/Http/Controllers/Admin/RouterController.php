@@ -34,10 +34,12 @@ class RouterController extends Controller
             'name'             => 'required|string|max:100',
             'model'            => 'nullable|string|max:100',
             'routeros_version' => 'nullable|string|max:50',
+            'connection_type'  => 'nullable|string|in:direct,vpn,hotspot',
             'notes'            => 'nullable|string',
             'is_active'        => 'boolean',
         ]);
 
+        $validated['connection_type']    = $request->input('connection_type', 'direct');
         $validated['radius_secret']      = Str::random(16);
         $validated['wan_interface']      = 'ether1';
         $validated['customer_interface'] = 'bridge1';
@@ -95,6 +97,7 @@ class RouterController extends Controller
             'notes'              => 'nullable|string',
             'wan_ip'             => 'nullable|ip',
             'vpn_ip'             => 'nullable|ip',
+            'connection_type'    => 'nullable|string|in:direct,vpn,hotspot',
         ]);
 
         $data['is_active'] = $request->boolean('is_active', true);
