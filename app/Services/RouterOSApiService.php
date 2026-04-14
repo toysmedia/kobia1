@@ -79,18 +79,12 @@ class RouterOSApiService
                     continue;
                 }
 
+                $row = [];
                 foreach ($response->getIterator() as $key => $value) {
-                    if (!array_key_exists($key, $result)) {
-                        $result[$key] = $value;
-                        continue;
-                    }
-
-                    if (!is_array($result[$key])) {
-                        $result[$key] = [$result[$key]];
-                    }
-
-                    $result[$key][] = $value;
+                    $row[$key] = $value;
                 }
+
+                $result[] = $row;
             }
 
             return $result;
@@ -140,13 +134,16 @@ class RouterOSApiService
         }
 
         try {
+            $resourceRow = $resource[0] ?? [];
+            $boardRow = $board[0] ?? [];
+
             return [
-                'board-name' => $resource['board-name'] ?? null,
-                'version' => $resource['version'] ?? null,
-                'cpu' => $resource['cpu'] ?? null,
-                'architecture-name' => $resource['architecture-name'] ?? null,
-                'serial-number' => $board['serial-number'] ?? null,
-                'uptime' => $resource['uptime'] ?? null,
+                'board-name' => $resourceRow['board-name'] ?? null,
+                'version' => $resourceRow['version'] ?? null,
+                'cpu' => $resourceRow['cpu'] ?? null,
+                'architecture-name' => $resourceRow['architecture-name'] ?? null,
+                'serial-number' => $boardRow['serial-number'] ?? null,
+                'uptime' => $resourceRow['uptime'] ?? null,
             ];
         } catch (\Throwable $e) {
             Log::error('RouterOSApiService: getSystemInfo failed', [
@@ -157,6 +154,48 @@ class RouterOSApiService
 
             return [];
         }
+    }
+
+    public function sendCommandMulti(string $command, array $args = []): array
+    {
+        return $this->sendCommand($command, $args);
+    }
+
+    public function getIdentity(): string
+    {
+        $identity = $this->sendCommand('/system/identity/print');
+
+        return (string) ($identity[0]['name'] ?? '');
+    }
+
+    public function getIpPools(): array
+    {
+        return $this->sendCommand('/ip/pool/print');
+    }
+
+    public function addIpPool(string $name, string $ranges): array
+    {
+        return $this->sendCommand('/ip/pool/add', [
+            'name' => $name,
+            'ranges' => $ranges,
+        ]);
+    }
+
+    public function removeIpPool(string $name): array
+    {
+        $pools = $this->getIpPools();
+
+        foreach ($pools as $pool) {
+            if (($pool['name'] ?? null) !== $name) {
+                continue;
+            }
+
+            return $this->sendCommand('/ip/pool/remove', [
+                'numbers' => $pool['.id'] ?? $pool['id'] ?? $name,
+            ]);
+        }
+
+        return [];
     }
 
     public static function fromRouter(Router $router): self
