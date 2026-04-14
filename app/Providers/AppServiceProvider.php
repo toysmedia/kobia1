@@ -26,7 +26,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        //
+        $this->app->bind(\App\Services\RouterOSApiService::class, function ($app) {
+            return new \App\Services\RouterOSApiService('127.0.0.1');
+        });
+
+        $this->app->singleton(\App\Services\MikrotikApiService::class);
     }
 
     public function boot(): void
