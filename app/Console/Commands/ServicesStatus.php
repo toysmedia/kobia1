@@ -7,6 +7,9 @@ use Illuminate\Console\Command;
 
 class ServicesStatus extends Command
 {
+    protected const SUPERVISORCTL_BIN = '/usr/local/bin/supervisorctl';
+    protected const SYSTEMCTL_BIN = '/bin/systemctl';
+
     protected $signature = 'services:status';
 
     protected $description = 'Get OpenVPN, FreeRADIUS, and Supervisor service status as JSON';
@@ -88,7 +91,7 @@ class ServicesStatus extends Command
 
     protected function parseSupervisorStatus(string $program): ?array
     {
-        $result = $this->runCommand("supervisorctl status {$program} 2>&1");
+        $result = $this->runCommand(self::SUPERVISORCTL_BIN . ' status ' . escapeshellarg($program) . ' 2>&1');
         if ($result['exit_code'] !== 0 || $result['output'] === '') {
             return null;
         }
@@ -111,21 +114,21 @@ class ServicesStatus extends Command
 
     protected function getSystemdStatus(string $service): array
     {
-        $activeResult = $this->runCommand("systemctl is-active {$service} 2>&1");
+        $activeResult = $this->runCommand(self::SYSTEMCTL_BIN . ' is-active ' . escapeshellarg($service) . ' 2>&1');
         $isRunning = trim($activeResult['output']) === 'active';
 
-        $pidResult = $this->runCommand("systemctl show {$service} --property=MainPID --value 2>&1");
+        $pidResult = $this->runCommand(self::SYSTEMCTL_BIN . ' show ' . escapeshellarg($service) . ' --property=MainPID --value 2>&1');
         $pid = (int) trim($pidResult['output']);
         $pid = $pid > 0 ? $pid : null;
 
-        $activeSinceResult = $this->runCommand("systemctl show {$service} --property=ActiveEnterTimestamp --value 2>&1");
+        $activeSinceResult = $this->runCommand(self::SYSTEMCTL_BIN . ' show ' . escapeshellarg($service) . ' --property=ActiveEnterTimestamp --value 2>&1');
         $uptime = null;
         $activeSince = trim($activeSinceResult['output']);
         if ($isRunning && $activeSince !== '') {
             try {
                 $uptime = Carbon::parse($activeSince)->diffForHumans(null, true);
             } catch (\Throwable) {
-                $uptime = $activeSince;
+                $uptime = null;
             }
         }
 

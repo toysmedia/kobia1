@@ -115,7 +115,9 @@
 @push('scripts')
 <script>
 $(function () {
-    const serviceMeta = @json($services);
+    const STATUS_REFRESH_DELAY_MS = 3000;
+    const AUTO_REFRESH_INTERVAL_MS = 30000;
+    const serviceMeta = @json($services, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     const statusUrl = "{{ route('admin.isp.configuration.services_status') }}";
     const restartUrl = "{{ route('admin.isp.configuration.restart_service') }}";
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -160,7 +162,13 @@ $(function () {
     }
 
     function restartService(service, button) {
-        if (!confirm(`Restart ${serviceMeta[service].name}?`)) {
+        if (!Object.prototype.hasOwnProperty.call(serviceMeta, service)) {
+            notify('Invalid service selected.', 'error');
+            return;
+        }
+
+        const serviceName = String(serviceMeta[service]?.name || service);
+        if (!confirm(`Restart ${serviceName}?`)) {
             return;
         }
 
@@ -174,7 +182,7 @@ $(function () {
             data: { service }
         }).done(function (response) {
             notify(response.message || 'Service restart requested successfully.', 'success');
-            setTimeout(fetchStatuses, 3000);
+            setTimeout(fetchStatuses, STATUS_REFRESH_DELAY_MS);
         }).fail(function (xhr) {
             const message = xhr.responseJSON?.message || 'Failed to restart service.';
             notify(message, 'error');
@@ -185,7 +193,7 @@ $(function () {
 
     Object.keys(serviceMeta).forEach(setCardLoading);
     fetchStatuses();
-    setInterval(fetchStatuses, 30000);
+    setInterval(fetchStatuses, AUTO_REFRESH_INTERVAL_MS);
 
     $('#refreshStatusBtn').on('click', function () {
         fetchStatuses();

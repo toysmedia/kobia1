@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Artisan;
 
 class ConfigurationController extends Controller
 {
+    protected const SUPERVISORCTL_BIN = '/usr/local/bin/supervisorctl';
+    protected const SYSTEMCTL_BIN = '/bin/systemctl';
+
     public function index()
     {
         return view('admin.configuration.index');
@@ -54,7 +57,7 @@ class ConfigurationController extends Controller
 
         if (isset($supervisorPrograms[$service])) {
             $program = $supervisorPrograms[$service];
-            $supervisorResult = $this->runCommand("supervisorctl restart {$program} 2>&1");
+            $supervisorResult = $this->runCommand(self::SUPERVISORCTL_BIN . ' restart ' . escapeshellarg($program) . ' 2>&1');
             if ($supervisorResult['exit_code'] === 0) {
                 return response()->json([
                     'success' => true,
@@ -65,7 +68,7 @@ class ConfigurationController extends Controller
         }
 
         $systemd = $systemdServices[$service];
-        $systemdResult = $this->runCommand("sudo systemctl restart {$systemd} 2>&1");
+        $systemdResult = $this->runCommand('sudo ' . self::SYSTEMCTL_BIN . ' restart ' . escapeshellarg($systemd) . ' 2>&1');
 
         if ($systemdResult['exit_code'] === 0) {
             return response()->json([
