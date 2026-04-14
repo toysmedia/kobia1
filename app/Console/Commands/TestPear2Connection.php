@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\RouterOSApiService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class TestPear2Connection extends Command
 {
@@ -46,7 +47,15 @@ class TestPear2Connection extends Command
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error($e->getMessage());
+            Log::error('PEAR2 RouterOS connection test failed', [
+                'host' => (string) $this->argument('host'),
+                'port' => (int) $this->option('port'),
+                'username' => (string) $this->option('username'),
+                'error' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+
+            $this->error('PEAR2 RouterOS connection test failed: ' . $e->getMessage());
 
             return self::FAILURE;
         } finally {
