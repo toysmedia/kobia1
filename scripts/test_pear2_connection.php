@@ -32,7 +32,16 @@ try {
         }
 
         foreach ($response->getIterator() as $key => $value) {
-            $data[$key] = $value;
+            if (!array_key_exists($key, $data)) {
+                $data[$key] = $value;
+                continue;
+            }
+
+            if (!is_array($data[$key])) {
+                $data[$key] = [$data[$key]];
+            }
+
+            $data[$key][] = $value;
         }
     }
 

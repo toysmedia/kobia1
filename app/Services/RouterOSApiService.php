@@ -80,7 +80,16 @@ class RouterOSApiService
                 }
 
                 foreach ($response->getIterator() as $key => $value) {
-                    $result[$key] = $value;
+                    if (!array_key_exists($key, $result)) {
+                        $result[$key] = $value;
+                        continue;
+                    }
+
+                    if (!is_array($result[$key])) {
+                        $result[$key] = [$result[$key]];
+                    }
+
+                    $result[$key][] = $value;
                 }
             }
 
@@ -106,8 +115,31 @@ class RouterOSApiService
     {
         try {
             $resource = $this->sendCommand('/system/resource/print');
-            $board = $this->sendCommand('/system/routerboard/print');
+        } catch (\Throwable $e) {
+            Log::error('RouterOSApiService: getSystemInfo resource query failed', [
+                'host' => $this->host,
+                'port' => $this->port,
+                'command' => '/system/resource/print',
+                'error' => $e->getMessage(),
+            ]);
 
+            return [];
+        }
+
+        try {
+            $board = $this->sendCommand('/system/routerboard/print');
+        } catch (\Throwable $e) {
+            Log::error('RouterOSApiService: getSystemInfo routerboard query failed', [
+                'host' => $this->host,
+                'port' => $this->port,
+                'command' => '/system/routerboard/print',
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
+
+        try {
             return [
                 'board-name' => $resource['board-name'] ?? null,
                 'version' => $resource['version'] ?? null,
