@@ -57,6 +57,7 @@ Route::get('/provision/{token}', [\App\Http\Controllers\Admin\RouterController::
             Route::get('/{router}/provision-status', 'provisionStatus')->name('provision_status');
             Route::get('/{router}/hotspot-files', 'downloadHotspotFiles')->name('hotspot_files');
             Route::post('/{router}/test-connection', 'testConnection')->name('test_connection');
+            Route::post('/{router}/configure', 'configureRouter')->name('configure');
             Route::post('/{router}/ping-status', 'pingStatus')->name('ping_status');  // <-- ADD THIS
         });
 

@@ -7,9 +7,11 @@ use App\Models\Nas;
 use App\Models\AuditLog;
 use App\Models\IspSetting;
 use App\Services\MikrotikScriptService;
+use App\Services\RouterOSApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class RouterController extends Controller
@@ -442,6 +444,200 @@ class RouterController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    public function configureRouter(Request $request, Router $router)
+    {
+        $step = (int) $request->input('step');
+        if (!in_array($step, [1, 2, 3, 4, 5], true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid configure step.',
+            ], 422);
+        }
+
+        Log::info('Router configure attempt started', [
+            'router_id' => $router->id,
+            'router_name' => $router->name,
+            'step' => $step,
+        ]);
+
+        try {
+            switch ($step) {
+                case 1:
+                    if ($router->isHotspot()) {
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Hotspot mode — API steps skipped',
+                            'data' => ['skipped' => true],
+                        ]);
+                    }
+
+                    if ($router->isVpn() && !$router->vpn_ip) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'VPN tunnel not established yet',
+                        ]);
+                    }
+
+                    $api = RouterOSApiService::fromRouter($router);
+                    $api->connect();
+                    $systemInfo = $api->getSystemInfo();
+
+                    $updates = [];
+                    if (!empty($systemInfo['board-name']) && $router->model !== $systemInfo['board-name']) {
+                        $updates['model'] = $systemInfo['board-name'];
+                    }
+                    if (!empty($systemInfo['version']) && $router->routeros_version !== $systemInfo['version']) {
+                        $updates['routeros_version'] = $systemInfo['version'];
+                    }
+                    if (!empty($updates)) {
+                        $router->update($updates);
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Connected to MikroTik API successfully',
+                        'data' => ['system_info' => $systemInfo],
+                    ]);
+
+                case 2:
+                    $nasIp = $router->getNasIp();
+                    if (!$nasIp) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'No NAS IP available for this router',
+                        ]);
+                    }
+
+                    Nas::updateOrCreate(
+                        ['nasname' => $nasIp],
+                        [
+                            'shortname' => $router->name,
+                            'secret' => $router->radius_secret,
+                            'type' => 'other',
+                        ]
+                    );
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'NAS entry registered in FreeRADIUS',
+                        'data' => ['nas_ip' => $nasIp],
+                    ]);
+
+                case 3:
+                    if ($router->isHotspot()) {
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Skipped — Hotspot mode',
+                            'data' => ['skipped' => true],
+                        ]);
+                    }
+
+                    $api = RouterOSApiService::fromRouter($router);
+                    $api->connect();
+
+                    $billingServerIp = (string) ($router->billing_server_vpn_ip ?: env('BILLING_SERVER_IP', '127.0.0.1'));
+                    $radiusRows = $api->sendCommand('/radius/print');
+                    $radiusId = null;
+
+                    foreach ($radiusRows as $row) {
+                        if (($row['address'] ?? null) === $billingServerIp) {
+                            $radiusId = $row['.id'] ?? $row['id'] ?? null;
+                            break;
+                        }
+                    }
+
+                    $radiusArgs = [
+                        'service' => 'ppp,hotspot',
+                        'address' => $billingServerIp,
+                        'secret' => $router->radius_secret,
+                    ];
+
+                    if ($radiusId) {
+                        $api->sendCommand('/radius/set', array_merge(['numbers' => (string) $radiusId], $radiusArgs));
+                    } else {
+                        $api->sendCommand('/radius/add', $radiusArgs);
+                    }
+
+                    $api->sendCommand('/radius/incoming/set', [
+                        'accept' => 'yes',
+                        'port' => '3799',
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'RADIUS configuration pushed to MikroTik',
+                    ]);
+
+                case 4:
+                    if ($router->isHotspot()) {
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Skipped — Hotspot mode',
+                            'data' => ['skipped' => true],
+                        ]);
+                    }
+
+                    $api = RouterOSApiService::fromRouter($router);
+                    $api->connect();
+
+                    $profileRows = $api->sendCommand('/ppp/profile/print');
+                    $profileId = null;
+                    foreach ($profileRows as $row) {
+                        if (($row['name'] ?? null) === 'pppoe-profile') {
+                            $profileId = $row['.id'] ?? $row['id'] ?? null;
+                            break;
+                        }
+                    }
+
+                    $profileArgs = [
+                        'name' => 'pppoe-profile',
+                        'local-address' => $router->pppoe_gateway_ip ?: '19.225.0.1',
+                        'use-radius' => 'yes',
+                        'only-one' => 'yes',
+                    ];
+
+                    if ($profileId) {
+                        $api->sendCommand('/ppp/profile/set', array_merge(['numbers' => (string) $profileId], $profileArgs));
+                    } else {
+                        $api->sendCommand('/ppp/profile/add', $profileArgs);
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'PPPoE server profile configured',
+                    ]);
+
+                case 5:
+                    $router->update([
+                        'provision_phase' => 3,
+                        'last_heartbeat_at' => now(),
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Provisioning completed successfully',
+                    ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Router configure step failed', [
+                'router_id' => $router->id,
+                'router_name' => $router->name,
+                'step' => $step,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unsupported configure step.',
+        ], 422);
     }
 
     /**

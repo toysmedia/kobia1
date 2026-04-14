@@ -220,6 +220,12 @@
                                                     <i class="bx bx-broadcast me-2"></i> Test Connection
                                                 </button>
                                             </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item text-primary"
+                                                        onclick="configureRouter({{ $router->id }}, {{ json_encode($router->name) }}, '{{ route('admin.isp.routers.configure', $router) }}')">
+                                                    <i class="bx bx-cog me-2"></i> Configure (Auto)
+                                                </button>
+                                            </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <form action="{{ route('admin.isp.routers.destroy', $router) }}" method="POST"
@@ -259,6 +265,53 @@
             </div>
             <div class="modal-body" id="testConnBody"></div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Configure Router Modal --}}
+<div class="modal fade" id="configureRouterModal" tabindex="-1" aria-labelledby="configureRouterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="configureRouterModalLabel">Configure Router</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="configureBanner"></div>
+
+                <div class="progress mb-3" style="height: 8px;">
+                    <div id="configureProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                </div>
+
+                <div class="list-group" id="configureSteps">
+                    @php
+                        $configureSteps = [
+                            1 => 'Connecting to MikroTik API…',
+                            2 => 'Registering NAS entry in FreeRADIUS…',
+                            3 => 'Pushing RADIUS configuration…',
+                            4 => 'Creating PPPoE server profile…',
+                            5 => 'Finalizing provisioning…',
+                        ];
+                    @endphp
+                    @foreach($configureSteps as $stepNo => $stepText)
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary">Step {{ $stepNo }}</span>
+                                    <span>{{ $stepText }}</span>
+                                </div>
+                                <span id="cfg-step-status-{{ $stepNo }}" class="text-muted"><i class="bx bx-minus"></i></span>
+                            </div>
+                            <small id="cfg-step-detail-{{ $stepNo }}" class="text-muted d-block mt-1"></small>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="configureRetryBtn" class="btn btn-outline-warning me-auto" style="display:none;"></button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -450,6 +503,175 @@ function testConnection(routerId, routerName, url) {
                 '<i class="bx bx-error me-1"></i>Request failed: ' +
                 $('<div>').text(msg).html() + '</div>'
             );
+        }
+    });
+}
+
+var configureState = {
+    routerId: null,
+    routerName: '',
+    url: '',
+    failedStep: null
+};
+
+function configureRouter(routerId, routerName, url) {
+    configureState.routerId = routerId;
+    configureState.routerName = routerName;
+    configureState.url = url;
+    configureState.failedStep = null;
+
+    $('#configureRouterModalLabel').text('Configure Router — ' + routerName);
+    resetConfigureUi();
+
+    var modal = new bootstrap.Modal(document.getElementById('configureRouterModal'));
+    modal.show();
+
+    runConfigureFromStep(1);
+}
+
+function resetConfigureUi() {
+    $('#configureBanner').html('');
+    $('#configureProgressBar').css('width', '0%').removeClass('bg-danger bg-success').addClass('bg-primary');
+    $('#configureRetryBtn').hide().off('click');
+
+    for (var step = 1; step <= 5; step++) {
+        setConfigureStepStatus(step, 'pending', '');
+    }
+}
+
+function setConfigureStepStatus(step, state, detail) {
+    var $status = $('#cfg-step-status-' + step);
+    var $detail = $('#cfg-step-detail-' + step);
+
+    if (state === 'running') {
+        $status.removeClass('text-success text-danger text-muted').addClass('text-primary')
+               .html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    } else if (state === 'success') {
+        $status.removeClass('text-primary text-danger text-muted').addClass('text-success')
+               .html('<i class="bx bx-check-circle"></i>');
+    } else if (state === 'failed') {
+        $status.removeClass('text-primary text-success text-muted').addClass('text-danger')
+               .html('<i class="bx bx-x-circle"></i>');
+    } else {
+        $status.removeClass('text-primary text-success text-danger').addClass('text-muted')
+               .html('<i class="bx bx-minus"></i>');
+    }
+
+    $detail.text(detail || '');
+}
+
+function runConfigureFromStep(startStep) {
+    configureState.failedStep = null;
+    $('#configureBanner').html('');
+    $('#configureRetryBtn').hide().off('click');
+    $('#configureProgressBar')
+        .css('width', Math.round(((startStep - 1) / 5) * 100) + '%')
+        .removeClass('bg-danger bg-success')
+        .addClass('bg-primary');
+
+    for (var resetStep = startStep; resetStep <= 5; resetStep++) {
+        setConfigureStepStatus(resetStep, 'pending', '');
+    }
+
+    function runStep(step) {
+        if (step > 5) {
+            $('#configureProgressBar')
+                .css('width', '100%')
+                .removeClass('bg-primary bg-danger')
+                .addClass('bg-success');
+            $('#configureBanner').html('<div class="alert alert-success mb-3"><i class="bx bx-check-circle me-1"></i>Router configuration completed successfully.</div>');
+            refreshRouterStatusBadge(configureState.routerId);
+            return;
+        }
+
+        setConfigureStepStatus(step, 'running', 'Running...');
+
+        $.ajax({
+            url: configureState.url,
+            type: 'POST',
+            timeout: 30000,
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                step: step
+            },
+            success: function (res) {
+                var ok = !!(res && res.success);
+                var message = (res && res.message) ? res.message : (ok ? 'Done' : 'Step failed');
+
+                if (!ok) {
+                    handleConfigureFailure(step, message);
+                    return;
+                }
+
+                setConfigureStepStatus(step, 'success', message);
+                var pct = Math.round((step / 5) * 100);
+                $('#configureProgressBar').css('width', pct + '%');
+                runStep(step + 1);
+            },
+            error: function (xhr, textStatus) {
+                var message = 'Request failed.';
+                if (textStatus === 'timeout') {
+                    message = 'Step timed out after 30 seconds.';
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                handleConfigureFailure(step, message);
+            }
+        });
+    }
+
+    runStep(startStep);
+}
+
+function handleConfigureFailure(step, message) {
+    configureState.failedStep = step;
+    setConfigureStepStatus(step, 'failed', message);
+    $('#configureProgressBar').removeClass('bg-primary bg-success').addClass('bg-danger');
+    $('#configureBanner').html('<div class="alert alert-danger mb-3"><i class="bx bx-error me-1"></i>' + $('<div>').text(message).html() + '</div>');
+
+    $('#configureRetryBtn')
+        .text('Retry from Step ' + step)
+        .show()
+        .off('click')
+        .on('click', function () {
+            runConfigureFromStep(step);
+        });
+}
+
+function refreshRouterStatusBadge(routerId) {
+    var $badge = $('#status-' + routerId);
+    if (!$badge.length) {
+        return;
+    }
+
+    var pingUrl = $badge.data('ping-url');
+    if (!pingUrl) {
+        return;
+    }
+
+    $badge.removeClass('bg-success bg-danger bg-warning')
+          .addClass('bg-secondary')
+          .html('<span class="spinner-border spinner-status" role="status"></span> Checking…');
+
+    $.ajax({
+        url: pingUrl,
+        type: 'POST',
+        data: { _token: $('meta[name="csrf-token"]').attr('content') },
+        success: function (res) {
+            if (res.online) {
+                $badge.removeClass('bg-secondary bg-danger bg-warning')
+                      .addClass('bg-success')
+                      .html('<i class="bx bx-radio-circle-marked me-1"></i> Online');
+            } else {
+                $badge.removeClass('bg-secondary bg-success bg-warning')
+                      .addClass('bg-danger')
+                      .html('<i class="bx bx-x-circle me-1"></i> Offline');
+            }
+        },
+        error: function () {
+            $badge.removeClass('bg-secondary bg-success bg-warning')
+                  .addClass('bg-danger')
+                  .html('<i class="bx bx-x-circle me-1"></i> Offline');
         }
     });
 }
