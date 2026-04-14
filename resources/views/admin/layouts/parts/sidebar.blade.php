@@ -169,6 +169,17 @@
                 <div class="text-truncate">ISP Settings</div>
             </a>
         </li>
+        <li class="menu-item {{ is_active_menu('admin.isp.configuration.', true) }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-server"></i>
+                <div class="text-truncate">Configuration</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item {{ is_active_menu('admin.isp.configuration.index') }}">
+                    <a href="{{ route('admin.isp.configuration.index') }}" class="menu-link"><div class="text-truncate">Server Services</div></a>
+                </li>
+            </ul>
+        </li>
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Account</span></li>
         <li class="menu-item {{ is_active_menu('admin.notifications.index') }}">
             <a href="{{ route('admin.notifications.index') }}" class="menu-link">
