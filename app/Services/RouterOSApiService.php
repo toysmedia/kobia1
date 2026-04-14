@@ -171,8 +171,19 @@ class RouterOSApiService
             }
         }
 
+        $host = (string) ($router->vpn_ip ?: $router->wan_ip ?: '');
+
+        if ($host === '') {
+            Log::error('RouterOSApiService: fromRouter failed, missing host', [
+                'router_id' => $router->id,
+                'router_name' => $router->name,
+            ]);
+
+            throw new \RuntimeException('Router does not have a valid host (vpn_ip or wan_ip).');
+        }
+
         return new self(
-            host: (string) ($router->vpn_ip ?: $router->wan_ip ?: ''),
+            host: $host,
             port: (int) ($router->api_port ?? 8728),
             username: (string) ($router->api_username ?? 'admin'),
             password: $password
