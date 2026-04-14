@@ -190,8 +190,13 @@ class RouterOSApiService
                 continue;
             }
 
+            $poolId = $pool['.id'] ?? $pool['id'] ?? null;
+            if ($poolId === null || $poolId === '') {
+                throw new \RuntimeException(sprintf('Cannot remove IP pool "%s": missing RouterOS pool identifier.', $name));
+            }
+
             return $this->sendCommand('/ip/pool/remove', [
-                'numbers' => $pool['.id'] ?? $pool['id'] ?? $name,
+                'numbers' => (string) $poolId,
             ]);
         }
 
