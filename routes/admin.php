@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\SessionController;
 use App\Http\Controllers\Admin\IspPaymentController;
 use App\Http\Controllers\Admin\IspSettingController;
 use App\Http\Controllers\Admin\IspResellerController;
+use App\Http\Controllers\Admin\ConfigurationController;
 
 Route::middleware(['is_installed'])->group(function () {
     
@@ -100,6 +101,12 @@ Route::get('/provision/{token}', [\App\Http\Controllers\Admin\RouterController::
         Route::prefix('isp/settings')->name('isp.settings.')->controller(IspSettingController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'update')->name('update');
+        });
+
+        Route::prefix('isp/configuration')->name('isp.configuration.')->controller(ConfigurationController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/services-status', 'servicesStatus')->name('services_status');
+            Route::post('/restart-service', 'restartService')->name('restart_service');
         });
 
         // Resellers
