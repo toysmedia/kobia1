@@ -62,6 +62,7 @@ return [
     'router_callback_secret' => env('ROUTER_CALLBACK_SECRET'),
 
     'billing_domain' => env('BILLING_DOMAIN', ''),
+    'billing_server_ip' => env('BILLING_SERVER_IP', '127.0.0.1'),
 
     'wan_interface' => env('WAN_INTERFACE', 'ether1'),
 
